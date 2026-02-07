@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CLIP</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #ffffff;
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      max-width: 420px;
+      width: 100%;
+      padding: 24px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 18px;
+      margin-bottom: 24px;
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      background: #000;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 16px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>CLIP</h1>
+    <p>The link you never change.</p>
+
+    <input id="url" placeholder="Paste a link here" />
+    <button onclick="clip()">CLIP IT</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCf_zUcKz6JwWJNc2RK9MwmgrdqK9EQ5U4",
+      authDomain: "clip-66ad0.firebaseapp.com",
+      projectId: "clip-66ad0",
+      storageBucket: "clip-66ad0.firebasestorage.app",
+      messagingSenderId: "982476350189",
+      appId: "1:982476350189:web:e4d41fe494383c447f62e4"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function clip() {
+      const url = document.getElementById('url').value;
+      if (!url) return;
+
+      const id = Math.random().toString(36).substring(2, 7);
+      await db.collection("clips").doc(id).set({
+        url: url,
+        created: Date.now()
+      });
+
+      const clipUrl = window.location.origin + window.location.pathname + "#" + id;
+      document.getElementById('result').innerHTML =
+        'Your CLIP:<br><strong>' + clipUrl + '</strong>';
+    }
+
+    async function checkRedirect() {
+      if (window.location.hash) {
+        const id = window.location.hash.substring(1);
+        const doc = await db.collection("clips").doc(id).get();
+        if (doc.exists) {
+          window.location.href = doc.data().url;
+        }
+      }
+    }
+
+    checkRedirect();
+  </script>
+</body>
+</html>
