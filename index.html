@@ -1,1 +1,137 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLIP</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #ffffff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      padding: 32px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 56px;
+      margin: 0 0 12px;
+      letter-spacing: -2px;
+    }
+
+    p {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 28px;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      border-radius: 14px;
+      border: 1px solid #ddd;
+      outline: none;
+      margin-bottom: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      border-radius: 14px;
+      border: none;
+      background: #000;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 14px;
+      word-break: break-all;
+    }
+
+    .copy {
+      margin-top: 10px;
+      font-size: 13px;
+      text-decoration: underline;
+      cursor: pointer;
+      display: none;
+    }
+
+    .footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>CLIP</h1>
+    <p>The link you never change.</p>
+
+    <input id="url" placeholder="Paste a link…" />
+    <button onclick="clip()">CLIP IT</button>
+
+    <div class="result" id="result"></div>
+    <div class="copy" id="copy" onclick="copyClip()">Copy link</div>
+
+    <div class="footer">Simple. Anonymous. Permanent.</div>
+  </div>
+
+  <script>
+    function clip() {
+      const url = document.getElementById("url").value.trim();
+      const result = document.getElementById("result");
+      const copy = document.getElementById("copy");
+
+      if (!url) {
+        result.innerHTML = "Paste a link first.";
+        copy.style.display = "none";
+        return;
+      }
+
+      const link =
+        window.location.origin +
+        window.location.pathname +
+        "?c=" +
+        encodeURIComponent(url);
+
+      result.innerHTML = "Your CLIP:<br><strong>" + link + "</strong>";
+      copy.style.display = "block";
+      window._clip = link;
+    }
+
+    function copyClip() {
+      navigator.clipboard.writeText(window._clip);
+      document.getElementById("copy").innerText = "Copied ✓";
+      setTimeout(() => {
+        document.getElementById("copy").innerText = "Copy link";
+      }, 1500);
+    }
+
+    const p = new URLSearchParams(window.location.search);
+    const target = p.get("c");
+    if (target) {
+      window.location.href = decodeURIComponent(target);
+    }
+  </script>
+</body>
+</html>
